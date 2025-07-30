@@ -44,7 +44,45 @@ const gridRef = useTemplateRef('grid');
 const gridCellsPos = ref<GridCellInternal[][]>(initializeEmptyGridArray()); 
 const gridCellsRef = ref<HTMLElement[][]>(initializeGridArrayRef());
 
+const canAddCard = computed(() => {
 
+  let can = false;
+
+  gridCellsPos.value.forEach((xArray, yIndex) => {
+
+    xArray.forEach((cell, xIndex) => {
+
+      if(!cell.card) can = true;
+      
+
+    })
+
+  })
+
+  return can;
+
+});
+
+const areCardsHighlighted = computed(() => {
+
+  let are = false;
+
+  gridCellsPos.value.forEach((xArray, yIndex) => {
+
+    xArray.forEach((cell, xIndex) => {
+
+      if(!cell.card) return;
+
+      if(cell.card.classList.includes('highlighted')) are = true;
+
+
+    })
+
+  })
+
+  return are;
+
+})
 
 const selectedCard = ref<SelectedCardType>({card: null, refCard: null});
 //const selectedCardCellRef = useTemplateRef('selectedCardCellRef');
@@ -149,7 +187,9 @@ function setCardsInitialStyle(){
 
 function emptyStyleHandler(yIndex : number, xIndex : number, gridCell : GridCellInternal){
 
+  return {};
 
+  /*
   if(!gridCell.card) return {};
 
   const left = gridCellsPos.value[yIndex][xIndex - 1] ? gridCellsPos.value[yIndex][xIndex - 1] : null;
@@ -194,6 +234,7 @@ function emptyStyleHandler(yIndex : number, xIndex : number, gridCell : GridCell
   //if(xIndex == 0 && yIndex == 1) console.log(rowSpan, columnSpan);
 
   return {'grid-row': 'span '+rowSpan, 'grid-column': 'span '+ columnSpan};
+  */
 }
 
 
@@ -347,6 +388,40 @@ function cardMouseDownLeftHandler(yIndex : number, xIndex : number, mouseEvent :
   }
 
 
+
+}
+
+function cardMouseDownRightHandler(yIndex : number, xIndex : number, mouseEvent : MouseEvent){
+
+  const card = gridCellsPos.value[yIndex][xIndex].card;
+
+  if(!card) return;
+
+  cardToggleClass(card, 'highlighted');
+
+
+
+
+}
+
+function cardToggleClass(card : CardInternal, className : string){
+
+  if(card.classList.includes(className)) cardRemoveClass(card, className);
+  else cardAddClass(card, className);
+
+}
+
+
+function cardAddClass(card : CardInternal, className : string){
+
+  if(!card.classList.includes(className)) card.classList.push(className);
+
+
+}
+
+function cardRemoveClass(card : CardInternal, className: string){
+
+  if(card.classList.includes(className)) card.classList = card.classList.filter((c) => c != className);
 
 }
 
@@ -758,7 +833,12 @@ function cardMouseLeaveEvHandler(yIndex : number, xIndex : number, mouseEvent : 
   if(card == selectedCard.value.card || card == resizeSelCard.card) return;
 
 
-  card.classList = [];
+  card.classList = card.classList.filter((c) => {
+
+    if(c == 'highlighted') return c;
+    return;
+
+  });
 
 }
 
@@ -888,6 +968,55 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
 }
 
 
+function addCardEvHandler(){
+
+
+  
+  let cardCreated = false;
+
+  for(let yIndex = 0; yIndex<gridCellsPos.value.length; yIndex ++){
+    if(cardCreated) break;
+
+
+    const xArrayLength = gridCellsPos.value[yIndex].length;
+
+    for(let xIndex = 0; xIndex<xArrayLength; xIndex++){
+
+      if(!gridCellsPos.value[yIndex][xIndex].card){
+
+        gridCellsPos.value[yIndex][xIndex].card = {text:'card Created', classList: [], style: []};
+        cardCreated = true;
+      } 
+
+      if(cardCreated) break;
+
+    }
+
+
+  }
+
+
+}
+
+function deleteCardsEvHandler(){
+
+  gridCellsPos.value.forEach((xArray, yIndex) => {
+
+    xArray.forEach((cell, xIndex) => {
+
+      if(!cell.card) return;
+
+      if(cell.card.classList.includes('highlighted')) cell.card = null;
+
+
+
+    })
+
+  });
+
+
+}
+
 
 </script>
 
@@ -922,6 +1051,7 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
             
             @mousedown.left.prevent="(e: MouseEvent) => cardMouseDownLeftHandler(yIndex,xIndex, e)"
             @mouseup.left.prevent="(e: MouseEvent) => cardMouseUpLeftEvHandler(yIndex,xIndex, e)"
+            @click.right.prevent="(e: MouseEvent) => cardMouseDownRightHandler(yIndex,xIndex,e)"
             @mousemove.prevent="(e: MouseEvent) => cardMouseMoveEvHandler(yIndex, xIndex, e)"
             @mouseleave.prevent="(e: MouseEvent) => cardMouseLeaveEvHandler(yIndex,xIndex,e)"
             
@@ -944,8 +1074,16 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
 
     <div id="buttonsContainer">
 
-      <button class="cardAction" id="addCardBtn"> Add Card </button>
-      <button class="cardAction" id="deleteCardBtn"> Delete Selected Card </button>
+      <button class="cardAction" id="addCardBtn"
+      @click="addCardEvHandler()"
+      :disabled="!canAddCard"
+      
+      > Add Card </button>
+      <button class="cardAction" id="deleteCardBtn"
+      @click="deleteCardsEvHandler()"
+      :disabled="!areCardsHighlighted"
+
+      > Delete Selected Cards </button>
 
     </div>
 
@@ -1093,6 +1231,9 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
 
   }
 
+  .card.highlighted {
+    background-color: aliceblue;
+  }
 
   .card.selected{
     background-color: aquamarine;
@@ -1107,6 +1248,7 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
     border: 5px solid rgb(255, 222, 160);
     z-index: 10;
   }
+
 
 
 
