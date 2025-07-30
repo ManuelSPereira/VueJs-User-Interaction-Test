@@ -8,6 +8,8 @@ type CardInternal = {
 
   text: string;
 
+  img?: HTMLImageElement;
+
   classList: string[];
 
   style: {key: string, value: string} [];
