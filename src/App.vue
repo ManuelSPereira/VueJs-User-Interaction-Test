@@ -46,6 +46,11 @@ const gridRef = useTemplateRef('grid');
 const gridCellsPos = ref<GridCellInternal[][]>(initializeEmptyGridArray()); 
 const gridCellsRef = ref<HTMLElement[][]>(initializeGridArrayRef());
 
+const customCardInput = document.createElement('input');
+customCardInput.type ='file';
+customCardInput.accept = 'image/*';
+customCardInput.addEventListener('change', (event : Event) => onIncomingCard(event));
+
 const canAddCard = computed(() => {
 
   let can = false;
@@ -565,7 +570,7 @@ function cardUnselect(yIndex : number, xIndex : number , card : CardInternal, ca
     gridCellsPos.value[yIndex][xIndex] = elementB;
     gridCellsPos.value[closestEmptySpaceY][closestEmptySpaceX] = elementA;
     
-    console.log(yIndex,xIndex,' | ',closestEmptySpaceY,closestEmptySpaceX, elementA, elementB);
+    //console.log(yIndex,xIndex,' | ',closestEmptySpaceY,closestEmptySpaceX, elementA, elementB);
     
 
   }
@@ -971,9 +976,16 @@ function bodyMouseUpEvHandler(mouseEvent : MouseEvent){
 
 
 function addCardEvHandler(){
+  addCard();
 
 
-  
+}
+
+function addCard(card? : CardInternal){
+
+  if(!card) card = {text:'card Created', classList: [], style: []};
+
+
   let cardCreated = false;
 
   for(let yIndex = 0; yIndex<gridCellsPos.value.length; yIndex ++){
@@ -986,7 +998,7 @@ function addCardEvHandler(){
 
       if(!gridCellsPos.value[yIndex][xIndex].card){
 
-        gridCellsPos.value[yIndex][xIndex].card = {text:'card Created', classList: [], style: []};
+        gridCellsPos.value[yIndex][xIndex].card = card;
         cardCreated = true;
       } 
 
@@ -996,8 +1008,7 @@ function addCardEvHandler(){
 
 
   }
-
-
+  
 }
 
 function deleteCardsEvHandler(){
@@ -1008,7 +1019,12 @@ function deleteCardsEvHandler(){
 
       if(!cell.card) return;
 
-      if(cell.card.classList.includes('highlighted')) cell.card = null;
+      if(cell.card.classList.includes('highlighted')) {
+
+        if(cell.card.img) URL.revokeObjectURL(cell.card.img.src);
+
+        cell.card = null;
+      }
 
 
 
@@ -1018,6 +1034,35 @@ function deleteCardsEvHandler(){
 
 
 }
+
+
+function addCustomCardEvHandler(){
+
+  customCardInput.click();
+
+}
+
+function onIncomingCard(event : Event){
+
+  const files = (event.target as HTMLInputElement).files;
+
+  if(!files) return;
+
+  const file = files[0];
+  const url = URL.createObjectURL(file);
+
+
+  const img = document.createElement('img');
+  img.src = url;
+
+  const newCard : CardInternal = {classList:[], style:[],text: img.src, img: img}; 
+
+  addCard(newCard);
+
+
+
+}
+
 
 
 </script>
@@ -1061,7 +1106,10 @@ function deleteCardsEvHandler(){
             >
     
               <h2>{{ xIndex }}, {{ yIndex }}</h2>
-              <h2>{{ gridCellsPos[yIndex][xIndex].card?.text }}</h2>
+              <h2 v-if="!gridCellsPos[yIndex][xIndex].card?.img">{{ gridCellsPos[yIndex][xIndex].card?.text }}</h2>
+              <img v-else :src="gridCellsPos[yIndex][xIndex].card.img.src"></img>
+
+
             </div>
       
           </div>
@@ -1076,16 +1124,27 @@ function deleteCardsEvHandler(){
 
     <div id="buttonsContainer">
 
-      <button class="cardAction" id="addCardBtn"
-      @click="addCardEvHandler()"
-      :disabled="!canAddCard"
-      
-      > Add Card </button>
-      <button class="cardAction" id="deleteCardBtn"
-      @click="deleteCardsEvHandler()"
-      :disabled="!areCardsHighlighted"
+      <div id="addRemoveWrapper">
+        <button class="cardAction" id="addCardBtn"
+        @click="addCardEvHandler()"
+        :disabled="!canAddCard"
+        
+        > Add Card </button>
+        <button class="cardAction" id="deleteCardBtn"
+        @click="deleteCardsEvHandler()"
+        :disabled="!areCardsHighlighted"
+  
+        > Delete Selected Cards </button>
 
-      > Delete Selected Cards </button>
+      </div>
+
+
+      <button class="cardAction" id="uploadImgBtn"
+      
+      @click="addCustomCardEvHandler()"
+      :disabled="!canAddCard"
+
+      > Upload Custom Image </button>
 
     </div>
 
@@ -1108,7 +1167,7 @@ function deleteCardsEvHandler(){
 
     display: grid;
 
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr auto 1fr;
 
     
 
@@ -1137,14 +1196,33 @@ function deleteCardsEvHandler(){
 
     display: flex;
 
-    align-items: center;
-    justify-content: left;
+    flex-direction: column;
 
-    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+
+    grid-template-rows: 1fr 1fr;
+
+ 
+
+    gap: 10rem;
 
   }
 
-  #buttonsContainer > button.cardAction {
+
+  #addRemoveWrapper {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 2rem;
+
+
+  }
+
+  button.cardAction {
 
     height: 5rem;
     width: 20rem;
@@ -1161,6 +1239,15 @@ function deleteCardsEvHandler(){
 
   #deleteCardBtn {
     background-color: brown;
+
+  }
+
+  #uploadImgBtn {
+    background-color: aquamarine;
+
+    align-self: center;
+    justify-self: center;
+
 
   }
 
@@ -1225,11 +1312,26 @@ function deleteCardsEvHandler(){
   .card{
     background-color: darkkhaki;
 
-    display: flex;
+    display: grid;
+    padding: 0.5rem;
+
+    grid-template-rows: 1fr 5fr;
+
 
     align-items: center;
-    justify-content: center;
+    align-content: center;
 
+    justify-items: center;
+
+    border: 2px solid black;
+
+
+  }
+
+  .card > img {
+
+    max-width: 100%;
+    max-height: 100%;
 
   }
 
