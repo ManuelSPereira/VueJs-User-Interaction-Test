@@ -12,6 +12,8 @@
 
   position: relative;
 
+  border-radius: 20px;
+
 }
 
 :root {
@@ -19,9 +21,17 @@
   height: 100%;
   width: 100%;
 
+  border-radius: 0;
+
 }
 
 body {
+
+  border-radius: 0;
+
   height: 100%;
   width: 100%;
+
+  overflow: hidden;
+
 }

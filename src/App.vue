@@ -38,8 +38,33 @@ onMounted(() => {
   document.body.addEventListener('mousemove', bodyMouseMoveEvHandler);
   document.body.addEventListener('mouseup', bodyMouseUpEvHandler);
 
+  document.body.addEventListener('keydown', (event : KeyboardEvent) => {
+
+    if(event.key == 'Backspace' || event.key == 'Delete'){
+      (document.querySelector('#deleteCardBtn') as HTMLButtonElement).click();
+      return;
+    }
+
+    if(event.key == 'Enter' && event.shiftKey){
+      (document.querySelector('#uploadImgBtn') as HTMLButtonElement).click();
+      return;
+    }
+
+    if(event.key == 'Enter'){
+      (document.querySelector('#addCardBtn') as HTMLButtonElement).click();
+      return;
+    }
+  
+  });
+
+
+  tuneGridStyle();
+
 
 });
+const gridSizeX = 6;
+const gridSizeY = Math.ceil(gridSizeX * (9 / 16));
+
 
 const gridRef = useTemplateRef('grid');
 
@@ -106,8 +131,6 @@ const onResizeCardInitialMousePosition = {y: -1, x: -1};
 
 const cardsRef = ref<HTMLElement[][]>(initializeGridArrayRef());
 
-const gridSizeX = 6;
-const gridSizeY = 3;
 
 
 
@@ -302,6 +325,20 @@ function cardStyleHandler(card?: CardInternal | null){
   });
 
   return obj;
+}
+
+function cardImgStyleHandler(yIndex : number, xIndex : number, card? : CardInternal | null){
+
+  if(!card || !card.img) return '';
+
+
+  const img = card.img;
+
+  console.log(img.naturalHeight, img.naturalWidth);
+
+  if(img.naturalHeight < (img.naturalWidth * (3/4))) return {height: '100%'};
+  return {width: '100%'};
+
 }
 
 
@@ -1055,14 +1092,50 @@ function onIncomingCard(event : Event){
   const img = document.createElement('img');
   img.src = url;
 
+  
   const newCard : CardInternal = {classList:[], style:[],text: img.src, img: img}; 
-
-  addCard(newCard);
-
+  
+  img.onload = () => addCard(newCard);
 
 
 }
 
+
+
+function tuneGridStyle(){
+
+  const styleSheets = document.styleSheets;
+
+  const styleSheet = (() => {
+
+    for(let i = 0; i< styleSheets.length; i++){
+
+      const styleSheet = styleSheets.item(i);
+
+      const ownerNode = styleSheet?.ownerNode as HTMLStyleElement;
+
+      //console.log(ownerNode);
+
+    }
+
+    return styleSheets[styleSheets.length-1];
+
+  })()
+
+  for(let rule of styleSheet.cssRules){
+    const r = rule as CSSStyleRule;
+    
+    if(r.selectorText == '.gridMain'){
+
+      r.style.gridTemplateColumns = `repeat(${gridSizeX}, 1fr)`;
+      r.style.gridTemplateRows = `repeat(${gridSizeY}, 1fr)`;
+
+    }
+
+  }
+
+
+}
 
 
 </script>
@@ -1071,7 +1144,10 @@ function onIncomingCard(event : Event){
 
   <div id="main">
 
-    <div class="gridMain" ref="grid">
+    <div class="gridMain" ref="grid"
+    @click.right.prevent
+    @mousedown.left.prevent
+    >
   
       <template
       v-for="(emptyRowArray,yIndex) in gridCellsPos">
@@ -1088,12 +1164,15 @@ function onIncomingCard(event : Event){
     
           :ref="(el) => {if(el) gridCellsRef[yIndex][xIndex] = el as HTMLElement}"
           >
-    
+            
+            
+            
             <div class="card"
-    
+            
             :class="gridCellsPos[yIndex][xIndex].card?.classList"
-    
+          
             v-if="cardVIFHandler(yIndex, xIndex)"
+            
             :style="cardStyleHandler(gridCellsPos[yIndex][xIndex].card)"
             
             @mousedown.left.prevent="(e: MouseEvent) => cardMouseDownLeftHandler(yIndex,xIndex, e)"
@@ -1104,13 +1183,16 @@ function onIncomingCard(event : Event){
             
             :ref="(el) => {if(el) cardsRef[yIndex][xIndex] = el as HTMLElement}"
             >
-    
+      
               <h2>{{ xIndex }}, {{ yIndex }}</h2>
-              <h2 v-if="!gridCellsPos[yIndex][xIndex].card?.img">{{ gridCellsPos[yIndex][xIndex].card?.text }}</h2>
-              <img v-else :src="gridCellsPos[yIndex][xIndex].card.img.src"></img>
-
-
+              <div>
+                <h2 v-if="!gridCellsPos[yIndex][xIndex].card?.img">{{ gridCellsPos[yIndex][xIndex].card?.text }}</h2>
+                <img v-else :src="gridCellsPos[yIndex][xIndex].card.img.src" :style="cardImgStyleHandler(yIndex, xIndex, gridCellsPos[yIndex][xIndex].card)"></img>
+              </div>
+  
+  
             </div>
+            
       
           </div>
         </template>
@@ -1162,14 +1244,17 @@ function onIncomingCard(event : Event){
 
   #main{
 
+    background-color: gray;
+
     height: 100%;
     width: 100%;
 
     display: grid;
 
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 
     
+    overflow: auto;
 
     align-items: center;
     justify-items: center;
@@ -1179,19 +1264,14 @@ function onIncomingCard(event : Event){
     gap: 2rem;
 
 
-    border: 2px solid orange;
 
   }
 
-  #main > *{
-    border: 2px solid green;
-
-  }
 
   #buttonsContainer {
 
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
 
 
     display: flex;
@@ -1203,9 +1283,12 @@ function onIncomingCard(event : Event){
 
     grid-template-rows: 1fr 1fr;
 
- 
+    background-color: darkgray;
 
     gap: 10rem;
+
+    box-shadow: 2px 2px 5px black;
+    border: 1px solid black;
 
   }
 
@@ -1219,6 +1302,30 @@ function onIncomingCard(event : Event){
 
     gap: 2rem;
 
+
+  }
+
+  .cardAction {
+    background-color: beige;
+
+    border: 1px solid black;
+
+    box-shadow: 2px 2px 5px black;
+
+  }
+
+  .cardAction:hover {
+
+    box-shadow:
+      2px 2px 5px black,
+      inset 0px 0px 20px white;
+  }
+
+  .cardAction:active {
+
+    box-shadow:
+      2px 2px 5px black,
+      inset 0px 0px 20px black;
 
   }
 
@@ -1254,40 +1361,34 @@ function onIncomingCard(event : Event){
 
   .gridMain{
     
-    height: 40rem;
-    width: 100rem;
+    --width: 80%;
+
+    width: var(--width);
     
-    grid-column: 2;
+    aspect-ratio: 16 / 9;
+    
+    grid-column: span 2;
 
     background-color: darkgray;
 
 
     display: grid;
 
+    
     grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    
+    gap: 1rem;
 
-    gap: 0.5rem;
+    padding: 2%;
 
-    padding: 0.5rem;
+    box-shadow:
+      2px 2px 5px black;
 
-
-
-  }
-
-
-
-  .gridSelectedCard{
-
-    display: grid;
+    border: 1px solid black;
 
   }
 
-  button.cardAction{
-
-
-
-  }
 
   .empty{
     background-color: rgb(42, 42, 42);
@@ -1297,10 +1398,21 @@ function onIncomingCard(event : Event){
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
 
+    box-shadow:
+      2px 2px 4px black,
+      inset 0px 0px 2px black;
+
+
   }
+
 
   .empty.proximity {
     border: 2px solid white;
+
+    box-shadow:
+      inset 0px 0px 10px white,
+      2px 2px 4px black;
+
   }
 
   .empty.proximityResize {
@@ -1313,27 +1425,46 @@ function onIncomingCard(event : Event){
     background-color: darkkhaki;
 
     display: grid;
-    padding: 0.5rem;
 
     grid-template-rows: 1fr 5fr;
 
+
+    padding: 2px;
 
     align-items: center;
     align-content: center;
 
     justify-items: center;
 
-    border: 2px solid black;
+    border-radius: 18px;
 
+    overflow: hidden;
+
+  }
+
+  .card > div{
+
+    height: 100%;
+    width: 100%;
+    border-radius: 0 0 18px 18px;
+
+    overflow: auto;
+
+    display: grid;
+    
+  }
+
+  .card > div > h2 {
+    justify-self: center;
+    align-self: center;
 
   }
 
-  .card > img {
 
-    max-width: 100%;
-    max-height: 100%;
-
+  .card * {
+    border-radius: 0;
   }
+
 
   .card.highlighted {
     background-color: aliceblue;
@@ -1342,6 +1473,9 @@ function onIncomingCard(event : Event){
   .card.selected{
     background-color: aquamarine;
     z-index: 10;
+
+    box-shadow: 0px 0px 20px black;
+
   }
 
   .card.resizable{
