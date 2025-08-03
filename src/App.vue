@@ -1034,7 +1034,7 @@ function addCard(card? : CardInternal){
     for(let xIndex = 0; xIndex<xArrayLength; xIndex++){
 
       if(!gridCellsPos.value[yIndex][xIndex].card){
-
+        card.text = 'card Created at '+xIndex+','+yIndex;
         gridCellsPos.value[yIndex][xIndex].card = card;
         cardCreated = true;
       } 
