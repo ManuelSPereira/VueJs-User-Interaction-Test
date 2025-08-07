@@ -1244,7 +1244,7 @@ function tuneGridStyle(){
 
   #main{
 
-    background-color: gray;
+    background-color: var(--color-primary-sel);
 
     height: 100%;
     width: 100%;
@@ -1283,12 +1283,12 @@ function tuneGridStyle(){
 
     grid-template-rows: 1fr 1fr;
 
-    background-color: darkgray;
+    background-color: var(--color-secondary-sel);
 
     gap: 10rem;
 
     box-shadow: 2px 2px 5px black;
-    border: 1px solid black;
+    border: 2px solid var(--color-accentA-sel);
 
   }
 
@@ -1308,13 +1308,17 @@ function tuneGridStyle(){
   .cardAction {
     background-color: beige;
 
-    border: 1px solid black;
+    border: 3px solid transparent;
 
     box-shadow: 2px 2px 5px black;
+
+    transition: border 100ms ease-in, box-shadow 100ms ease-in;
 
   }
 
   .cardAction:hover {
+
+    border: 3px solid white;
 
     box-shadow:
       2px 2px 5px black,
@@ -1323,9 +1327,11 @@ function tuneGridStyle(){
 
   .cardAction:active {
 
+    border: 3px solid var(--color-accentA-sel);
+
     box-shadow:
       2px 2px 5px black,
-      inset 0px 0px 20px black;
+      inset 0px 0px 20px var(--color-primary-sel);
 
   }
 
@@ -1340,17 +1346,17 @@ function tuneGridStyle(){
   }
 
   #addCardBtn {
-    background-color: green;
+    background-color: var(--color-buttonAccept-sel);
 
   }
 
   #deleteCardBtn {
-    background-color: brown;
+    background-color: var(--color-buttonReject-sel);
 
   }
 
   #uploadImgBtn {
-    background-color: aquamarine;
+    background-color: var(--color-buttonAditional-sel);
 
     align-self: center;
     justify-self: center;
@@ -1369,7 +1375,7 @@ function tuneGridStyle(){
     
     grid-column: span 2;
 
-    background-color: darkgray;
+    background-color: var(--color-secondary-sel);
 
 
     display: grid;
@@ -1385,7 +1391,7 @@ function tuneGridStyle(){
     box-shadow:
       2px 2px 5px black;
 
-    border: 1px solid black;
+    border: 2px solid var(--color-accentA-sel);
 
   }
 
@@ -1398,19 +1404,29 @@ function tuneGridStyle(){
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
 
+    border: 8px solid transparent;
+
     box-shadow:
-      2px 2px 4px black,
-      inset 0px 0px 2px black;
+    inset 0px 0px 5px black,
+    2px 2px 4px black;
+
+    
+
+
+    transition: box-shadow 100ms ease-in, border 100ms ease-in;
 
 
   }
 
 
   .empty.proximity {
-    border: 2px solid white;
+    border: 8px solid white;
+
+    transition: box-shadow 100ms ease-in, border 100ms ease-in;
 
     box-shadow:
       inset 0px 0px 10px white,
+      0px 0px 10px white,
       2px 2px 4px black;
 
   }
@@ -1422,12 +1438,11 @@ function tuneGridStyle(){
   }
 
   .card{
-    background-color: darkkhaki;
+    background-color: var(--color-accentA-sel);
 
     display: grid;
 
     grid-template-rows: 1fr 5fr;
-
 
     padding: 2px;
 
@@ -1436,9 +1451,11 @@ function tuneGridStyle(){
 
     justify-items: center;
 
-    border-radius: 18px;
+    border-radius: 12px;
 
     overflow: hidden;
+
+    transition: background-color 0.2s ease-in-out;
 
   }
 
@@ -1451,6 +1468,8 @@ function tuneGridStyle(){
     overflow: auto;
 
     display: grid;
+
+
     
   }
 
@@ -1467,12 +1486,16 @@ function tuneGridStyle(){
 
 
   .card.highlighted {
-    background-color: aliceblue;
+    background-color: var(--color-accentC-sel);
+
+    transition: background-color 20ms ease-in-out;
+
   }
 
   .card.selected{
-    background-color: aquamarine;
+    background-color: var(--color-accentB-sel);
     z-index: 10;
+
 
     box-shadow: 0px 0px 20px black;
 

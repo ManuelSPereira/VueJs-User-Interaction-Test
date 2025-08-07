@@ -25,6 +25,20 @@
 
 }
 
+:root {
+
+  --color-primary-sel: #06060f;
+  --color-secondary-sel: #0e141f;
+  --color-accentA-sel: #ffc156;
+  --color-accentB-sel: #19fff0;
+  --color-accentC-sel: #ffcac2;
+
+  --color-buttonAccept-sel: #3dc63f;
+  --color-buttonReject-sel: #c63d3d;
+  --color-buttonAditional-sel: #3d8bc6;
+
+}
+
 body {
 
   border-radius: 0;
