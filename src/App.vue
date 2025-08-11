@@ -1248,270 +1248,331 @@ function tuneGridStyle(){
 
     height: 100%;
     width: 100%;
+    
 
     display: grid;
 
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: minmax(70rem, 2fr) minmax(35rem, 1fr);
 
     
     overflow: auto;
 
     align-items: center;
     justify-items: center;
-
-    justify-content: center;
+    
+    
 
     gap: 2rem;
+
+    padding: 2rem;
 
 
 
   }
 
-
+  
+  
   #buttonsContainer {
-
-    width: 80%;
-    height: 80%;
-
-
+    
+    width: 100%;
+    max-width: 35rem;
+    height: 40rem;
+    max-height: 40rem;
+    
+    
     display: flex;
-
+    
     flex-direction: column;
-
+    
     align-items: center;
     justify-content: center;
-
+    
     grid-template-rows: 1fr 1fr;
-
+    
     background-color: var(--color-secondary-sel);
-
+    
     gap: 10rem;
-
+    
     box-shadow: 2px 2px 5px black;
     border: 2px solid var(--color-accentA-sel);
-
+    
   }
-
-
+  
+  
   #addRemoveWrapper {
-
-    display: flex;
-
+    
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    
     align-items: center;
-    justify-content: center;
-
+    justify-items: center;
+    
     gap: 2rem;
-
-
+    
+    
+    padding: 2rem;
+    
   }
-
+  
+  
   .cardAction {
     background-color: beige;
-
+    
     border: 3px solid transparent;
-
+    
     box-shadow: 2px 2px 5px black;
-
+    
     transition: border 100ms ease-in, box-shadow 100ms ease-in;
-
+    
   }
-
+  
   .cardAction:hover {
-
+    
     border: 3px solid white;
-
+    
     box-shadow:
-      2px 2px 5px black,
-      inset 0px 0px 20px white;
+    2px 2px 5px black,
+    inset 0px 0px 20px white;
   }
-
+  
   .cardAction:active {
-
+    
     border: 3px solid var(--color-accentA-sel);
-
+    
     box-shadow:
-      2px 2px 5px black,
-      inset 0px 0px 20px var(--color-primary-sel);
-
+    2px 2px 5px black,
+    inset 0px 0px 20px var(--color-primary-sel);
+    
   }
-
+  
   button.cardAction {
-
+    
     height: 5rem;
-    width: 20rem;
-
+    width: min(20rem, 100%);
+    
     font-size: medium;
     font-weight: 600;
-
+    
   }
-
+  
   #addCardBtn {
     background-color: var(--color-buttonAccept-sel);
-
+    
   }
-
+  
   #deleteCardBtn {
     background-color: var(--color-buttonReject-sel);
-
+    
   }
-
+  
   #uploadImgBtn {
     background-color: var(--color-buttonAditional-sel);
 
     align-self: center;
     justify-self: center;
-
-
+    
+    
   }
-
-
+  
+  
   .gridMain{
     
-    --width: 80%;
-
-    width: var(--width);
+    width: 100%;
+    
+    max-width: 100rem;
+    
+    
+    
     
     aspect-ratio: 16 / 9;
     
-    grid-column: span 2;
-
+    
     background-color: var(--color-secondary-sel);
-
-
+    
+    
     display: grid;
-
+    
     
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(4, 1fr);
     
     gap: 1rem;
-
+    
     padding: 2%;
-
+    
     box-shadow:
-      2px 2px 5px black;
-
+    2px 2px 5px black;
+    
     border: 2px solid var(--color-accentA-sel);
-
+    
   }
-
-
+  
+  
   .empty{
+    
     background-color: rgb(42, 42, 42);
-
+    
     display: grid;
-
+    
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-
+    
     border: 8px solid transparent;
-
+    
     box-shadow:
     inset 0px 0px 5px black,
     2px 2px 4px black;
-
+    
+    
     
 
-
     transition: box-shadow 100ms ease-in, border 100ms ease-in;
-
-
+    
+    
   }
-
-
+  
+  
   .empty.proximity {
     border: 8px solid white;
-
+    
     transition: box-shadow 100ms ease-in, border 100ms ease-in;
-
+    
     box-shadow:
-      inset 0px 0px 10px white,
-      0px 0px 10px white,
-      2px 2px 4px black;
-
+    inset 0px 0px 10px white,
+    0px 0px 10px white,
+    2px 2px 4px black;
+    
   }
-
+  
   .empty.proximityResize {
-
+    
     border: 2px solid cyan;
-
+    
   }
-
+  
   .card{
     background-color: var(--color-accentA-sel);
-
+    
     display: grid;
-
+    
     grid-template-rows: 1fr 5fr;
-
+    
     padding: 2px;
-
+    
     align-items: center;
     align-content: center;
-
+    
     justify-items: center;
-
+    
     border-radius: 12px;
-
+    
     overflow: hidden;
-
+    
     transition: background-color 0.2s ease-in-out;
-
+    
   }
-
+  
   .card > div{
-
+    
     height: 100%;
     width: 100%;
     border-radius: 0 0 18px 18px;
-
+    
     overflow: auto;
-
+    
     display: grid;
-
-
+    
+    
     
   }
-
+  
   .card > div > h2 {
     justify-self: center;
     align-self: center;
-
+    
   }
-
-
+  
+  
   .card * {
     border-radius: 0;
   }
-
-
+  
+  
   .card.highlighted {
     background-color: var(--color-accentC-sel);
-
+    
     transition: background-color 20ms ease-in-out;
-
+    
   }
-
+  
   .card.selected{
     background-color: var(--color-accentB-sel);
     z-index: 10;
-
-
+    
+    
     box-shadow: 0px 0px 20px black;
-
+    
   }
-
+  
   .card.resizable{
     border: 5px solid orange;
   }
-
+  
   .card.resizing{
     border: 5px solid rgb(255, 222, 160);
     z-index: 10;
   }
+  
+  @media (width < 1920px) {
+  
+  
+    #main {
+      grid-template-columns: none;
+      
+      grid-template-rows: auto auto;
+  
+      display: flex;
+      flex-direction: column;
 
+      align-items: center;
+      
+      
+      
+  
+      
+  
+    }
 
+  
+    .gridMain {
+  
+      width: auto;
+      min-width: none;
+      max-width: none;
+      min-height: 720px;
+      height: auto;
+     
 
+      padding: 1rem;
 
-
+      aspect-ratio: 16 / 9;
+      
+  
+      
+  
+    }
+  
+    #buttonsContainer {
+  
+      min-height: 40rem;
+      min-width: 35rem;
+  
+    }
+  
+  }
+  
+  
+  
+  
 </style>
